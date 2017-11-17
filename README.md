@@ -1,15 +1,56 @@
-Composer Library Template
-=========================
+# Ghantaghar
 
-If you are trying to create a new PHP Composer library, whether it will be going to submitted to packagist.org or just in your Github account, this template of files will surely help you make the process a lot easier and faster.
+A simple PHP API extension for Nepali DateTime. [http://bhaktaraz.com.np](http://bhaktaraz.com.np)
 
-Features
---------
+```php
+$ghantaghar = new Ghantaghar();
 
-* PSR-4 autoloading compliant structure
-* Unit-Testing with PHPUnit
-* Comprehensive Guides and tutorial
-* Easy to use to any framework or even a plain php file
+printf("Right now is %s", $ghantaghar->now());
 
+printf('<br/>');
 
-I encourage that you put more information on this readme file instead of leaving it as is. See [http://www.darwinbiler.com/designing-and-making-the-readme-file-for-your-github-repository/](How to make a README file) for more info.
+printf("Right now in text format is %s", $ghantaghar->now('text'));
+```
+
+## Installation
+
+### With Composer
+
+```
+$ composer require bhaktaraz/ghantaghar
+```
+
+```json
+{
+    "require": {
+        "bhaktaraz/ghantaghar": "dev-master"
+    }
+}
+```
+
+```php
+<?php
+require 'vendor/autoload.php';
+
+use Bhaktaraz\Ghantaghar\Ghantaghar;
+
+$ghantaghar = new Ghantaghar();
+
+printf("Right now is %s", $ghantaghar->now());
+```
+
+<a name="install-nocomposer"/>
+### Without Composer
+
+Why are you not using [composer](http://getcomposer.org/)? Download [Ghantaghar.php](https://github.com/bhaktaraz/ghantaghar/blob/master/src/Ghantaghar.php) from the repo and save the file into your project path somewhere.
+
+```php
+<?php
+require 'path/to/Ghantaghar.php';
+
+use Bhaktaraz\Ghantaghar\Ghantaghar;
+
+$ghantaghar = new Ghantaghar();
+
+printf("Right now is %s", $ghantaghar->now());
+```
