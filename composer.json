@@ -1,0 +1,24 @@
+{
+    "name": "bhaktaraz/ghantaghar",
+    "description": "A simple API extension for Nepali DateTime.",
+    "keywords": ["datetime", "nepali datetime"],
+    "authors": [
+        {
+            "name": "Bhaktaraz Bhatta",
+            "email": "bhattabhakta@gmail.com"
+        }
+    ],
+    "license": "proprietary",
+    "type": "project",
+    "require": {
+		"php": ">=5.4"
+    },
+	"require-dev": {
+		"phpunit/phpunit": "5.2.*"
+    },
+	"autoload": {
+        "psr-4": {
+            "Bhaktaraz\\Ghantaghar\\": "src/"
+        }
+    }
+}
