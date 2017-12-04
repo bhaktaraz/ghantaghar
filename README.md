@@ -3,13 +3,7 @@
 A simple PHP API extension for Nepali DateTime. [http://bhaktaraz.com.np](http://bhaktaraz.com.np)
 
 ```php
-$ghantaghar = new Ghantaghar();
-
-printf("Right now is %s", $ghantaghar->now());
-
-printf('<br/>');
-
-printf("Right now in text format is %s", $ghantaghar->now('text'));
+printf("अहिले को समय :: %s", Ghantaghar::now());
 ```
 
 ## Installation
@@ -34,9 +28,7 @@ require 'vendor/autoload.php';
 
 use Bhaktaraz\Ghantaghar\Ghantaghar;
 
-$ghantaghar = new Ghantaghar();
-
-printf("Right now is %s", $ghantaghar->now());
+printf("अहिले को समय :: %s", Ghantaghar::now());
 ```
 
 <a name="install-nocomposer"/>
@@ -50,7 +42,5 @@ require 'path/to/Ghantaghar.php';
 
 use Bhaktaraz\Ghantaghar\Ghantaghar;
 
-$ghantaghar = new Ghantaghar();
-
-printf("Right now is %s", $ghantaghar->now());
+printf("अहिले को समय :: %s", Ghantaghar::now());
 ```
