@@ -3,10 +3,15 @@ require 'vendor/autoload.php';
 
 use Bhaktaraz\Ghantaghar\Ghantaghar;
 
-$ghantaghar = new Ghantaghar();
+printf("अहिले को समय :: %s", Ghantaghar::now());
 
-printf("Right now is %s", $ghantaghar->now());
+echo '<br>';
 
-printf('<br/>');
+printf("आज को मिति :: %s", Ghantaghar::today());
 
-printf("Right now in text format is %s", $ghantaghar->now('text'));
+echo '<br>';
+
+if(Ghantaghar::isWeekend()){
+   echo "आज सप्ताहान्त हो। पार्टी!";
+}
+

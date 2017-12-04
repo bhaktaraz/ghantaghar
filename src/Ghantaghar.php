@@ -2,15 +2,98 @@
 namespace Bhaktaraz\Ghantaghar;
 
 /**
-*  Ghantaghar
-*
-*  A simple API extension for Nepali DateTime.
-*
-*  @author bhaktaraz bhatta <bhattabhakta@gmail.com>
-*/
+ * Ghantaghar
+ *
+ * A simple API extension for Nepali DateTime.
+ *
+ * @author bhaktaraz bhatta <bhattabhakta@gmail.com>
+ */
 class Ghantaghar{
 
-    private $bs = [
+    /**
+     * The day constants.
+     */
+    const SUNDAY = 0;
+    const MONDAY = 1;
+    const TUESDAY = 2;
+    const WEDNESDAY = 3;
+    const THURSDAY = 4;
+    const FRIDAY = 5;
+    const SATURDAY = 6;
+
+    /**
+     * Names of days of the week.
+     *
+     * @var array
+     */
+    protected static $days = array(
+        self::SUNDAY => 'आइतबार',
+        self::MONDAY => 'सोमबार',
+        self::TUESDAY => 'मंगलबार',
+        self::WEDNESDAY => 'बुधबार',
+        self::THURSDAY => 'बिहिबार',
+        self::FRIDAY => 'शुक्रबार',
+        self::SATURDAY => 'शनिबार',
+    );
+
+    /**
+     * Terms used to detect if a time passed is a relative date.
+     *
+     * This is here for testing purposes.
+     *
+     * @var array
+     */
+    protected static $relativeKeywords = array(
+        '+',
+        '-',
+        'पहिले',
+        'पहिलो',
+        'अन्तिम',
+        'अर्को',
+        'यो',
+        'आज',
+        'भोलि',
+        'हिजो',
+    );
+
+    /**
+     * Number of X in Y.
+     */
+    const YEARS_PER_CENTURY = 100;
+    const YEARS_PER_DECADE = 10;
+    const MONTHS_PER_YEAR = 12;
+    const MONTHS_PER_QUARTER = 3;
+    const WEEKS_PER_YEAR = 52;
+    const DAYS_PER_WEEK = 7;
+    const HOURS_PER_DAY = 24;
+    const MINUTES_PER_HOUR = 60;
+    const SECONDS_PER_MINUTE = 60;
+
+    /**
+     * First day of week.
+     *
+     * @var int
+     */
+    protected static $weekStartsAt = self::SUNDAY;
+
+    /**
+     * Last day of week.
+     *
+     * @var int
+     */
+    protected static $weekEndsAt = self::SATURDAY;
+
+    /**
+     * Days of weekend.
+     *
+     * @var array
+     */
+    protected static $weekendDays = array(
+        self::FRIDAY,
+        self::SATURDAY,
+    );
+
+    protected static $bs = [
         0 => [2000, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
         1 => [2001, 31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
         2 => [2002, 31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
@@ -104,9 +187,9 @@ class Ghantaghar{
         90 => [2090, 30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 30, 30]
     ];
 
-    private $nep_date = ['year' => '', 'month' => '', 'date' => '', 'day' => '', 'nmonth' => '', 'num_day' => ''];
+    private static $nep_date = ['year' => '', 'month' => '', 'date' => '', 'day' => '', 'nmonth' => '', 'num_day' => ''];
 
-    private $eng_date = ['year' => '', 'month' => '', 'date' => '', 'day' => '', 'emonth' => '', 'num_day' => ''];
+    private static $eng_date = ['year' => '', 'month' => '', 'date' => '', 'day' => '', 'emonth' => '', 'num_day' => ''];
 
     public $debug_info = "";
 
@@ -329,9 +412,9 @@ class Ghantaghar{
      * @return unknown
      */
 
-    public function eng_to_nep($yy, $mm, $dd)
+    public static function eng_to_nep($yy, $mm, $dd)
     {
-        if ($this->is_range_eng($yy, $mm, $dd) == false) {
+        if (self::is_range_eng($yy, $mm, $dd) == false) {
             return false;
         } else {
             // english month data.
@@ -354,7 +437,7 @@ class Ghantaghar{
 
             // count total no. of days in-terms of year
             for ($i = 0; $i < ($yy - $def_eyy); $i++) {    //total days for month calculation...(english)
-                if ($this->is_leap_year($def_eyy + $i) == 1) {
+                if (self::is_leap_year($def_eyy + $i) == 1) {
                     for ($j = 0; $j < 12; $j++) {
                         $total_eDays += $lmonth[$j];
                     }
@@ -367,7 +450,7 @@ class Ghantaghar{
 
             // count total no. of days in-terms of month
             for ($i = 0; $i < ($mm - 1); $i++) {
-                if ($this->is_leap_year($yy) == 1) {
+                if (self::is_leap_year($yy) == 1) {
                     $total_eDays += $lmonth[$i];
                 } else {
                     $total_eDays += $month[$i];
@@ -386,7 +469,7 @@ class Ghantaghar{
 
             // count nepali date from array
             while ($total_eDays != 0) {
-                $a = $this->bs[$i][$j];
+                $a = self::$bs[$i][$j];
                 $total_nDays++;                        //count the days
                 $day++;                                //count the days interms of 7 days
                 if ($total_nDays > $a) {
@@ -410,14 +493,14 @@ class Ghantaghar{
 
             $numDay = $day;
 
-            $this->nep_date["year"] = $y;
-            $this->nep_date["month"] = $m;
-            $this->nep_date["date"] = $total_nDays;
-            $this->nep_date["day"] = $this->get_day_of_week($day);
-            $this->nep_date["month_name"] = $this->get_nepali_month($m);
-            $this->nep_date["num_day"] = $numDay;
+            self::$nep_date["year"] = $y;
+            self::$nep_date["month"] = $m;
+            self::$nep_date["date"] = $total_nDays;
+            self::$nep_date["day"] = self::get_day_of_week($day);
+            self::$nep_date["month_name"] = self::get_nepali_month($m);
+            self::$nep_date["num_day"] = $numDay;
 
-            return $this->nep_date;
+            return self::$nep_date;
         }
     }
 
@@ -452,7 +535,7 @@ class Ghantaghar{
         $month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         $lmonth = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-        if ($this->is_range_nep($yy, $mm, $dd) === false) {
+        if (self::is_range_nep($yy, $mm, $dd) === false) {
             return false;
 
         } else {
@@ -460,14 +543,14 @@ class Ghantaghar{
             // count total days in-terms of year
             for ($i = 0; $i < ($yy - $def_nyy); $i++) {
                 for ($j = 1; $j <= 12; $j++) {
-                    $total_nDays += $this->bs[$k][$j];
+                    $total_nDays += self::bs[$k][$j];
                 }
                 $k++;
             }
 
             // count total days in-terms of month
             for ($j = 1; $j < $mm; $j++) {
-                $total_nDays += $this->bs[$k][$j];
+                $total_nDays += self::bs[$k][$j];
             }
 
             // count total days in-terms of dat
@@ -478,7 +561,7 @@ class Ghantaghar{
             $m = $def_emm;
             $y = $def_eyy;
             while ($total_nDays != 0) {
-                if ($this->is_leap_year($y)) {
+                if (self::is_leap_year($y)) {
                     $a = $lmonth[$m];
                 } else {
                     $a = $month[$m];
@@ -500,14 +583,14 @@ class Ghantaghar{
             }
             $numDay = $day;
 
-            $this->eng_date["year"] = $y;
-            $this->eng_date["month"] = $m;
-            $this->eng_date["date"] = $total_eDays;
-            $this->eng_date["day"] = $this->get_day_of_week($day);
-            $this->eng_date["month_name"] = $this->get_english_month($m);
-            $this->eng_date["num_day"] = $numDay;
+            self::$eng_date["year"] = $y;
+            self::$eng_date["month"] = $m;
+            self::$eng_date["date"] = $total_eDays;
+            self::$eng_date["day"] = self::get_day_of_week($day);
+            self::$eng_date["month_name"] = self::get_english_month($m);
+            self::$eng_date["num_day"] = $numDay;
 
-            return $this->eng_date;
+            return self::$eng_date;
 
         }
     }
@@ -515,11 +598,11 @@ class Ghantaghar{
     ///////////////////////////////////////////////
     public function nep_to_eng($yy, $mm, $dd)
     {
-        $arr = $this->n_to_e($yy, $mm, $dd);
+        $arr = self::n_to_e($yy, $mm, $dd);
         $et_year = $arr['year'];
         $et_month = $arr['month'];
         $et_date = $arr['date'];
-        $new_nep = $this->eng_to_nep($et_year, $et_month, $et_date);
+        $new_nep = self::eng_to_nep($et_year, $et_month, $et_date);
         //showpre($new_nep,'new_nep');
         //showpre($yy.' '.$mm.' '.$dd,'original');
         //showpre($arr,'eng');
@@ -544,7 +627,7 @@ class Ghantaghar{
     {
         $yearShort = (int)$year % 100;
 
-        return isset($this->_bs[$yearShort]) ? $this->_bs[$yearShort][(int)$month] : null;
+        return isset(self::_bs[$yearShort]) ? self::_bs[$yearShort][(int)$month] : null;
     }
 
     /**
@@ -558,13 +641,13 @@ class Ghantaghar{
     private function date_to_day($date)
     {
         @list($year, $month, $day) = explode('-', $date);
-        if ($this->is_range_nep($year, $month, $day) === false) {
+        if (self::is_range_nep($year, $month, $day) === false) {
             throw new Exception("Date out of range");
         }
 
         $yearShort = (int)$year % 100;
 
-        $current_year_days = $this->_bs[$yearShort];
+        $current_year_days = self::_bs[$yearShort];
 
         array_splice($current_year_days, $month);
         $required_months = array_splice($current_year_days, 1);
@@ -583,13 +666,13 @@ class Ghantaghar{
      */
     public function total_days_in_year($year)
     {
-        if ($this->is_range_nep($year, 01, 01) === false) {
+        if (self::is_range_nep($year, 01, 01) === false) {
             throw new Exception("Date out of range");
         }
 
         $yearShort = (int)$year % 100;
 
-        $current_year_days = $this->_bs[$yearShort];
+        $current_year_days = self::_bs[$yearShort];
         $required_months = array_splice($current_year_days, 1);
 
         if (!empty($required_months) && is_array($required_months)) {
@@ -609,12 +692,12 @@ class Ghantaghar{
     {
 
         @list($sYear, $month, $day) = explode('-', $start_date);
-        if ($this->is_range_nep($sYear, $month, $day) === false) {
+        if (self::is_range_nep($sYear, $month, $day) === false) {
             throw new Exception("Date out of range");
         }
 
         @list($eYear, $month, $day) = explode('-', $end_date);
-        if ($this->is_range_nep($eYear, $month, $day) === false) {
+        if (self::is_range_nep($eYear, $month, $day) === false) {
             throw new Exception("Date out of range");
         }
 
@@ -678,16 +761,16 @@ class Ghantaghar{
      * @param $dateArray
      * @return array
      */
-    private function englishToNepaliDate($dateArray)
+    public static function englishToNepaliDate($dateArray)
     {
         $nepaliDate = [];
-        $convertedDate = $this->eng_to_nep((int)$dateArray[0], (int)$dateArray[1], (int)$dateArray[2]);
-        $nepaliDate['year'] = $this->getNepaliNumber($convertedDate['year']);
-        $nepaliDate['month_name'] = $this->getMahina($convertedDate['month']);
-        $nepaliDate['month'] = $this->getNepaliNumber($convertedDate['month']);
-        $nepaliDate['day'] = $this->getBaar($convertedDate['num_day']);
-        $nepaliDate['date'] = $this->getNepaliNumber($convertedDate['date']);
-        $nepaliDate['num_day'] = $this->getNepaliNumber($convertedDate['num_day']);
+        $convertedDate = self::eng_to_nep((int)$dateArray[0], (int)$dateArray[1], (int)$dateArray[2]);
+        $nepaliDate['year'] = self::getNepaliNumber($convertedDate['year']);
+        $nepaliDate['month_name'] = self::getMahina($convertedDate['month']);
+        $nepaliDate['month'] = self::getNepaliNumber($convertedDate['month']);
+        $nepaliDate['day'] = self::getBaar($convertedDate['num_day']);
+        $nepaliDate['date'] = self::getNepaliNumber($convertedDate['date']);
+        $nepaliDate['num_day'] = self::getNepaliNumber($convertedDate['num_day']);
 
         return $nepaliDate;
     }
@@ -707,17 +790,41 @@ class Ghantaghar{
 
         $hour = $timeArray[0];
 
-        $nepaliDate = $this->englishToNepaliDate($dateArray);
+        $nepaliDate = self::englishToNepaliDate($dateArray);
 
-        $nepaliTime['hour'] = $this->getNepaliNumber($hour);
-        $nepaliTime['minutes'] = $this->getNepaliNumber($timeArray[1]);
-        $nepaliTime['seconds'] = $this->getNepaliNumber($timeArray[2]);
+        $nepaliTime['hour'] = self::getNepaliNumber($hour);
+        $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
+        $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
 
-        if($format=='text'){
-            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
-        }
+//        if($format=='w d, m y h:i:s'){
+//            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+//        }
 
         return $nepaliDate['year'].'/'.$nepaliDate['month'].'/'.$nepaliDate['date'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+    }
+
+    /**
+     * @param null $format
+     * @return string
+     */
+    public function today($format = null)
+    {
+        $now = date('Y-m-d h:i:s');
+
+        $dateTime = explode(' ', $now);
+
+        $dateArray = explode('-', $dateTime[0]);
+        $timeArray = explode(':', $dateTime[1]);
+
+        $hour = $timeArray[0];
+
+        $nepaliDate = self::englishToNepaliDate($dateArray);
+
+//        if($format=='w d, m y h:i:s'){
+//            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+//        }
+
+        return $nepaliDate['year'].'/'.$nepaliDate['month'].'/'.$nepaliDate['date'];
     }
 
     /**
@@ -731,10 +838,10 @@ class Ghantaghar{
         $timeArray = explode(':', $dateTime[1]);
 
         $hour = $timeArray[0];
-        $nepaliDate = $this->englishToNepaliDate($dateArray);
-        $nepaliTime['hour'] = $this->getNepaliNumber($hour);
-        $nepaliTime['minutes'] = $this->getNepaliNumber($timeArray[1]);
-        $nepaliTime['seconds'] = $this->getNepaliNumber($timeArray[2]);
+        $nepaliDate = self::englishToNepaliDate($dateArray);
+        $nepaliTime['hour'] = self::getNepaliNumber($hour);
+        $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
+        $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
 
         return compact('nepaliDate', 'nepaliTime');
     }
@@ -746,8 +853,18 @@ class Ghantaghar{
     public function convertDateToNepali($date)
     {
         $dateArray = explode('-', $date);
-        $nepaliDate = $this->englishToNepaliDate($dateArray);
+        $nepaliDate = self::englishToNepaliDate($dateArray);
 
         return $nepaliDate;
+    }
+
+    /**
+     * Determines if the instance is a weekend day
+     *
+     * @return bool
+     */
+    public function isWeekend()
+    {
+        return in_array(date('w'), static::$weekendDays);
     }
 }
