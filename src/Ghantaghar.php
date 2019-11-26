@@ -686,7 +686,7 @@ class Ghantaghar{
      * Returns the total number of days between the given dates
      * @param  Date $start_date
      * @param  Date $end_date
-     * @return Integer             total number of days between start and end date
+     * @return Integer total number of days between start and end date
      */
     public function days_between($start_date, $end_date)
     {
@@ -796,9 +796,17 @@ class Ghantaghar{
         $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
         $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
 
-//        if($format=='w d, m y h:i:s'){
-//            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
-//        }
+        if($format=='w D, m Y h:i:s'){
+            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+        }
+
+        if($format=='w D, m Y'){
+            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'];
+        }
+
+        if($format=='h:i:s'){
+            return $nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+        }
 
         return $nepaliDate['year'].'/'.$nepaliDate['month'].'/'.$nepaliDate['date'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
     }
@@ -818,11 +826,23 @@ class Ghantaghar{
 
         $hour = $timeArray[0];
 
+        $nepaliTime['hour'] = self::getNepaliNumber($hour);
+        $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
+        $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
+
         $nepaliDate = self::englishToNepaliDate($dateArray);
 
-//        if($format=='w d, m y h:i:s'){
-//            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
-//        }
+        if($format=='w D, m Y h:i:s'){
+            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+        }
+
+        if($format=='w D, m Y'){
+            return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'];
+        }
+
+        if($format=='h:i:s'){
+            return $nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+        }
 
         return $nepaliDate['year'].'/'.$nepaliDate['month'].'/'.$nepaliDate['date'];
     }
@@ -838,6 +858,12 @@ class Ghantaghar{
         $timeArray = explode(':', $dateTime[1]);
 
         $hour = $timeArray[0];
+
+        $nepaliTime['hour'] = self::getNepaliNumber($hour);
+        $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
+        $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
+
+        $hour = $timeArray[0];
         $nepaliDate = self::englishToNepaliDate($dateArray);
         $nepaliTime['hour'] = self::getNepaliNumber($hour);
         $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
@@ -848,14 +874,38 @@ class Ghantaghar{
 
     /**
      * @param $date
+     * @param null $format
      * @return mixed
      */
-    public function convertDateToNepali($date)
+    public static function convertDateToBs($date, $format=null)
     {
-        $dateArray = explode('-', $date);
-        $nepaliDate = self::englishToNepaliDate($dateArray);
+        $dateTime = explode(' ', $date);
+        $dateArray = explode('-', $dateTime[0]);
+        $timeArray = explode(':', $dateTime[1]);
 
-        return $nepaliDate;
+        $hour = $timeArray[0];
+
+        $nepaliTime['hour'] = self::getNepaliNumber($hour);
+        $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
+        $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
+
+        $hour = $timeArray[0];
+        $nepaliDate = self::englishToNepaliDate($dateArray);
+        $nepaliTime['hour'] = self::getNepaliNumber($hour);
+        $nepaliTime['minutes'] = self::getNepaliNumber($timeArray[1]);
+        $nepaliTime['seconds'] = self::getNepaliNumber($timeArray[2]);
+
+        if(!is_null($format)){
+            if($format=='w D, m Y h:i:s'){
+                return $nepaliDate['day'].' '.$nepaliDate['date'].', '.$nepaliDate['month_name'].' '.$nepaliDate['year'].' '.$nepaliTime['hour'].':'.$nepaliTime['minutes'].':'.$nepaliTime['seconds'];
+            }
+
+            if($format=='Y m d w'){
+                return $nepaliDate['year'].' '.$nepaliDate['month_name'].' '.$nepaliDate['date'].' '.$nepaliDate['day'];
+            }
+        }
+
+        return $nepaliDate['year'].'/'.$nepaliDate['month'].'/'.$nepaliDate['date'];
     }
 
     /**
